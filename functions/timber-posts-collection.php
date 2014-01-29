@@ -4,7 +4,7 @@
 if ( !defined( 'ABSPATH' ) )
     exit;
 
-class TimberPostsCollection extends ArrayObject
+class TimberPostsCollection extends TimberCollection
 {
 
     public function __construct( $array = array(), $post_class = 'TimberPost' ) {

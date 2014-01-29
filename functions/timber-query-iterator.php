@@ -12,6 +12,12 @@ class TimberQueryIterator implements Iterator
     private $_query = null;
     private $_posts_class = 'TimberPost';
 
+    public function __call($name, $arguments) {
+        if ( method_exists( $this->_query->posts, $name ) ) {
+            return call_user_func_array( array( &$this->_query->posts, $name ), $arguments );
+        }
+    }
+
     public function __construct( $query = false, $posts_class = 'TimberPost' ) {
 
         if ( $posts_class )
@@ -46,13 +52,13 @@ class TimberQueryIterator implements Iterator
             $the_query = new WP_Query();
         }
 
+        $the_query->posts = new TimberPostsCollection( $the_query->posts, $posts_class );
         $this->_query = $the_query;
 
     }
 
     public function get_posts( $return_collection = false ) {
-        $posts = new TimberPostsCollection( $this->_query->posts, $this->_posts_class );
-        return ( $return_collection ) ? $posts : $posts->get_posts();
+        return ( $return_collection ) ? $this->_query->posts : $this->_query->posts->get_posts();
     }
 
     //

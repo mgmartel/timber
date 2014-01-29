@@ -23,6 +23,7 @@ require_once(__DIR__ . '/functions/timber-term.php');
 require_once(__DIR__ . '/functions/timber-term-getter.php');
 require_once(__DIR__ . '/functions/timber-image.php');
 require_once(__DIR__ . '/functions/timber-menu.php');
+require_once(__DIR__ . '/functions/timber-collection.php');
 require_once(__DIR__ . '/functions/timber-query-iterator.php');
 require_once(__DIR__ . '/functions/timber-posts-collection.php');
 
