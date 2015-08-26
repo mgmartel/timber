@@ -118,6 +118,7 @@ class TimberTemplateLoader
             remove_filter('the_content', 'prepend_attachment');
         elseif ( is_single()         && $template = $this->get_single_template()         ) :
         elseif ( is_page()           && $template = $this->get_page_template()           ) :
+        elseif ( is_singular()       && $template = $this->get_singular_template()              ) :
         elseif ( is_category()       && $template = $this->get_category_template()       ) :
         elseif ( is_tag()            && $template = $this->get_tag_template()            ) :
         elseif ( is_author()         && $template = $this->get_author_template()         ) :
@@ -488,6 +489,18 @@ class TimberTemplateLoader
         $templates[] = "single.twig";
 
         return $this->get_query_template( 'single', $templates );
+    }
+
+    /**
+     * Retrieves the path of the singular template in current or parent template.
+     *
+     * The template path is filterable via the dynamic {@see '$type_template'} hook,
+     * e.g. 'singular_template'.
+     *
+     * @return string Full path to singular template file
+     */
+    function get_singular_template() {
+        return $this->get_query_template( 'singular' );
     }
 
     /**
