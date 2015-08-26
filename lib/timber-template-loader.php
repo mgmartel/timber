@@ -433,6 +433,7 @@ class TimberTemplateLoader
      */
     function get_page_template() {
         $id = get_queried_object_id();
+        $template = get_page_template_slug();
         $pagename = get_query_var('pagename');
 
         if ( ! $pagename && $id ) {
@@ -443,6 +444,8 @@ class TimberTemplateLoader
         }
 
         $templates = array();
+        if ( $template && 0 === validate_file( $template ) )
+            $templates[] = substr( $template, 0, -4 ) . ".twig";
         if ( $pagename )
             $templates[] = "page-$pagename.twig";
         if ( $id )
