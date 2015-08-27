@@ -21,6 +21,7 @@ class TestTimberTemplateLoader extends WP_UnitTestCase {
 
         // Setup CPT
         register_post_type( 'course', array( 'public' => true ) );
+        register_post_type( 'tour', array( 'public' => true ) );
 
         // Setup custom render page
         $this->custom_render_pid = $this->factory->post->create( array(
@@ -146,7 +147,7 @@ class TestTimberTemplateLoader extends WP_UnitTestCase {
     function testLoadTemplate() {
 
         // expected template => new post args
-        $test_posts = array(
+        $posts = array(
 
             // POSTS
             'single.twig' => array(),
@@ -154,6 +155,15 @@ class TestTimberTemplateLoader extends WP_UnitTestCase {
             // PAGES
             'page.twig'   => array(
                 'post_type' => 'page'
+            ),
+
+            'page.twig'   => array(
+                'post_type' => 'page'
+            ),
+
+            'template-destination.twig'   => array(
+                'post_type' => 'page',
+                'page_template' => 'template-destination.php'
             ),
 
             'page-my-page.twig' => array(
@@ -166,34 +176,52 @@ class TestTimberTemplateLoader extends WP_UnitTestCase {
             // CPT
             'single-course.twig'   => array(
                 'post_type' => 'course'
-            ),
+            )
         );
 
-        foreach( $test_posts as $expected => $args ) {
-
-            $pid = $this->factory->post->create( $args );
-
-            // @see https://unit-tests.trac.wordpress.org/ticket/106
-            $post_type = isset( $args['post_type'] ) ? $args['post_type'] : 'post';
-            if ( in_array( $post_type, array( 'page' ) ) ) {
-                $url = add_query_arg( array(
-                    'page_id' => $pid,
-                ), '/' );
-
-            } else {
-                $url = add_query_arg( array(
-                    'p' => $pid,
-                    'post_type' => $post_type
-                ), '/' );
-
-            }
-
-            $str = $this->_get_contents_with_template_loader( $url );
-            $this->assertEquals( "This is " . $expected, $str );
-
-        }
+        $this->_testLoadTemplates( $posts );
 
     }
+
+    function testLoadTemplateSingular() {
+        $theme = wp_get_theme( 'template-loader-theme-singular' );
+		switch_theme($theme['Template'], $theme['Stylesheet']);
+
+        $posts = array(
+            // CPT Singular
+            'singular.twig'   => array(
+                'post_type' => 'tour'
+            )
+        );
+
+        $this->_testLoadTemplates( $posts );
+    }
+
+        private function _testLoadTemplates( $posts ) {
+            foreach( $posts as $expected => $args ) {
+
+                $pid = $this->factory->post->create( $args );
+
+                // @see https://unit-tests.trac.wordpress.org/ticket/106
+                $post_type = isset( $args['post_type'] ) ? $args['post_type'] : 'post';
+                if ( in_array( $post_type, array( 'page' ) ) ) {
+                    $url = add_query_arg( array(
+                        'page_id' => $pid,
+                    ), '/' );
+
+                } else {
+                    $url = add_query_arg( array(
+                        'p' => $pid,
+                        'post_type' => $post_type
+                    ), '/' );
+
+                }
+
+                $str = $this->_get_contents_with_template_loader( $url );
+                $this->assertEquals( "This is " . $expected, $str );
+
+            }
+        }
 
     function testContextFile() {
         $pid = $this->factory->post->create( array(
